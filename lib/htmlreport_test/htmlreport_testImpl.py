@@ -6,6 +6,11 @@ from Bio import SeqIO
 from pprint import pprint, pformat
 from KBaseReport.KBaseReportClient import KBaseReport
 from htmlreport_test.Utils.ReportUtil import ReportUtil
+import matplotlib
+import uuid
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 #END_HEADER
 
 
@@ -31,6 +36,20 @@ This sample module contains one small method - filter_contigs.
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
+
+    def _mkdir_p(self, path):
+        """
+        _mkdir_p: make directory for given path
+        """
+        if not path:
+            return
+        try:
+            os.makedirs(path)
+        except OSError as exc:
+            if exc.errno == errno.EEXIST and os.path.isdir(path):
+                pass
+            else:
+                raise
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
@@ -44,7 +63,7 @@ This sample module contains one small method - filter_contigs.
         self.config = config
         self.config['SDK_CALLBACK_URL'] = os.environ['SDK_CALLBACK_URL']
         self.config['KB_AUTH_TOKEN'] = os.environ['KB_AUTH_TOKEN']
-
+	self.scratch = config['scratch']
         #END_CONSTRUCTOR
         pass
 
@@ -94,19 +113,21 @@ This sample module contains one small method - filter_contigs.
         print('Starting Filter Contigs function. Params=')
         pprint(params)
         print('Creating image and saving HTML report')
-        dummy_html_report_runner = ReportUtil(self.config)
-        returnVal = dummy_html_report_runner.run_image(params)
-        output = returnVal
 
+        result_directory = os.path.join(self.scratch, str(uuid.uuid4()))
+        self._mkdir_p(result_directory)
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(range(100))
+        fig.savefig(result_directory + '/plot1.png')
         
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(range(1000))
+        fig.savefig(result_directory + '/plot2.png')
 
-
-
-
-
-
-
-
+        dummy_html_report_runner = ReportUtil(self.config)
+        output = dummy_html_report_runner._generate_report (params, result_directory)
 
 
 

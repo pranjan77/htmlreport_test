@@ -146,29 +146,4 @@ class ReportUtil:
         self.scratch = config['scratch']
 
 
-    def run_image(self, params):
-        """
-        """
-        log('--->\nrunning image creation script\n' +
-            'params:\n{}'.format(json.dumps(params, indent=1)))
-
-        result_directory = os.path.join(self.scratch, str(uuid.uuid4()))
-        self._mkdir_p(result_directory)
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.plot(range(100))
-        fig.savefig(result_directory + '/plot1.png')
-        
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.plot(range(1000))
-        fig.savefig(result_directory + '/plot2.png')
-
-
-        returnVal = {'result_directory': result_directory}
-        report_output = self._generate_report(params,
-                                              result_directory)
-        returnVal.update(report_output)
-
-        return returnVal
 
